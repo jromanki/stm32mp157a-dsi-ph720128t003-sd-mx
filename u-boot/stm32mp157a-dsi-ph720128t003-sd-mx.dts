@@ -150,12 +150,6 @@
 		};
 	};
 
-	adc_sleep_pins_mx: adc_sleep_mx-0 {
-		pins {
-			pinmux = <STM32_PINMUX('B', 1, ANALOG)>; /* ADC1_INP5 */
-		};
-	};
-
 	eth1_pins_mx: eth1_mx-0 {
 		pins1 {
 			pinmux = <STM32_PINMUX('A', 2, AF11)>; /* ETH1_MDIO */
@@ -889,20 +883,24 @@
 &adc{
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&adc_pins_mx>;
-	pinctrl-1 = <&adc_sleep_pins_mx>;
 	status = "okay";
 
 	/* USER CODE BEGIN adc */
 
+	vdda-supply = <&vdd>;
 	vref-supply = <&vdd>;
 	status = "okay";
 	adc1: adc@0 {
-		st,adc-channels = <5>;
-		st,min-sample-time-nsecs = <10000>;
-		status = "okay";
-	};
+		   #address-cells = <1>;
+		   #size-cells = <0>;
+		   status = "okay";
+		   channel@5 {
+				   reg = <5>;
+				   st,min-sample-time-ns = <10000>;
+		   };
+   };
 
-	/* USER CODE END adc */
+   /* USER CODE END adc */
 };
 
 &timers2{
@@ -910,7 +908,14 @@
 
 	/* USER CODE BEGIN timers2 */
 
-	trigger@0 {
+	/delete-property/dmas;
+	/delete-property/dma-names;
+
+	pwm {
+		status = "okay";
+	};
+
+	timer@1 {
 		status = "okay";
 	};
 
